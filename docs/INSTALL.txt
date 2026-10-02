@@ -1,0 +1,35 @@
+Voice 0.3.0 Beta — 显示器音量调节 / Monitor volume control
+https://github.com/FengBuL/voice-control
+
+系统要求：Apple Silicon（M 系列）Mac，macOS 14.2 或更新版本。
+这是未经过 Apple 公证的测试版，使用临时签名。
+
+安装与使用
+1. 将 Voice.app 拖入 Applications（应用程序），然后从应用程序文件夹打开。
+2. 如果 macOS 提示开发者无法验证，先尝试打开一次，再到“系统设置 → 隐私与安全性”查看“仍要打开”。仅在确认下载来源后操作。
+3. 在“系统设置 → 声音 → 输出”选择显示器。
+4. 点击菜单栏扬声器图标。硬件音量不可用时，点击“启用软件音量”，允许系统音频访问。初始软件音量为 30%。
+5. 播放声音，调整滑块或静音，核对实际效果。
+6. 更换 HDMI / USB-C 转 HDMI 连接或声音输出后，重新启用软件音量。
+
+权限与兼容
+软件音量需要系统音频访问，只在本机实时处理，不保存或上传音频。
+键盘音量键接管为可选功能，需要辅助功能权限。
+当前软件音频格式范围为双声道 32-bit float PCM；不支持的格式会显示错误。
+已实测 USB-C 转 HDMI → BenQ EW2780Q 的调节与静音；HDMI 直连仍待更多用户实测。
+系统 HDMI 音量滑块可能继续灰色，请使用 Voice 菜单栏面板。
+显示器实体音量决定最大响度。停止软件音量或退出 Voice 后，软件衰减结束，声音可能恢复到原始响度；建议先暂停播放或将实体音量设为舒适水平。
+
+卸载：退出 Voice，然后删除 Applications 中的 Voice.app。没有安装音频驱动。
+反馈：https://github.com/FengBuL/voice-control/issues
+
+English
+Requires an Apple Silicon Mac running macOS 14.2 or later.
+This beta is ad-hoc signed and has not been notarized by Apple.
+Drag Voice.app into Applications. If Gatekeeper blocks it, follow Apple's Privacy & Security / Open Anyway flow after verifying the download source.
+Select your monitor in System Settings > Sound > Output. Open the menu bar speaker, click Enable Software Volume (启用软件音量), and allow system audio access. Initial software volume is 30%.
+Use the slider or mute to check actual playback. Re-enable after changing the output or connection.
+Audio is processed locally in real time, with no recording files or uploads. Optional media keys require Accessibility permission. The current app UI is Chinese.
+Stereo 32-bit float PCM is required. USB-C to HDMI with BenQ EW2780Q was tested; direct HDMI playback needs further verification.
+Stopping or quitting removes attenuation and may restore the original loudness. Pause playback first or keep the monitor's hardware volume at a comfortable level.
+Quit and delete Voice.app to uninstall. No audio driver is installed.

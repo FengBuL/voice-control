@@ -1,0 +1,6 @@
+build/
+release/
+AGENTS.md
+Vendor/m1ddc/.objects/
+Vendor/m1ddc/m1ddc
+.DS_Store
