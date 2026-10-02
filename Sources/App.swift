@@ -3,6 +3,8 @@ import SwiftUI
 import CoreAudio
 import ApplicationServices
 
+private let showVoicePanel = Notification.Name("io.github.fengbul.voicecontrol.showPanel.\(getuid())")
+
 func currentAudioOutput() -> String {
     var address = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyDefaultOutputDevice,
                                              mScope: kAudioObjectPropertyScopeGlobal,
@@ -411,7 +413,8 @@ struct VolumePanel: View {
                 Button("重新检测") { model.refresh() }.disabled(model.busy)
                 Spacer()
                 Button("关于") {
-                    NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Voice", .applicationVersion: "0.3.0 · Beta", .credits: NSAttributedString(string: "显示器音量调节 · Monitor volume control\nhttps://github.com/FengBuL/voice-control")])
+                    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+                    NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Voice", .applicationVersion: "\(version) · Beta", .credits: NSAttributedString(string: "显示器音量调节 · Monitor volume control\nhttps://github.com/FengBuL/voice-control")])
                 }
                 Button("退出") { NSApp.terminate(nil) }
             }.buttonStyle(.borderless).font(.caption)
@@ -435,12 +438,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover = NSPopover()
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: VolumePanel(model: model, keys: keys))
+        DistributedNotificationCenter.default().addObserver(self, selector: #selector(reopenPanel), name: showVoicePanel,
+                                                           object: nil, suspensionBehavior: .deliverImmediately)
         model.refresh()
         wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self?.model.refresh() }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(displayChanged), name: NSApplication.didChangeScreenParametersNotification, object: nil)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.togglePanel() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.showPanel() }
         if CommandLine.arguments.contains("--smoke-test") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                 print("SMOKE: panel=\(self.popover.isShown), displays=\(self.model.monitors.count), selected=\(self.model.selectedMonitor?.name ?? "none"), status=\(self.model.status), controlEnabled=\(self.model.canControl)")
@@ -451,8 +456,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        DistributedNotificationCenter.default().removeObserver(self, name: showVoicePanel, object: nil)
         keys.stop()
         model.shutdown()
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showPanelForReopen(source: "launch-services")
+        return true
+    }
+
+    @objc private func reopenPanel(_ notification: Notification) {
+        DispatchQueue.main.async { self.showPanelForReopen(source: "another-process") }
+    }
+
+    private func showPanelForReopen(source: String) {
+        showPanel()
+        if CommandLine.arguments.contains("--smoke-test") {
+            print("REOPEN: source=\(source), panel=\(popover.isShown)")
+        }
     }
 
     @objc private func displayChanged() {
@@ -461,9 +483,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func togglePanel() {
         if popover.isShown { popover.performClose(nil) }
-        else if let button = item.button {
-            model.audioOutput = currentAudioOutput()
-            NSApp.activate(ignoringOtherApps: true)
+        else { showPanel() }
+    }
+
+    private func showPanel() {
+        guard let button = item?.button else { return }
+        model.audioOutput = currentAudioOutput()
+        NSApp.activate(ignoringOtherApps: true)
+        if !popover.isShown {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         }
     }
@@ -472,6 +499,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 @main
 enum ScreenVolumeApp {
     static func main() {
+        do {
+            let directory = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
+                                                        appropriateFor: nil, create: true)
+                .appendingPathComponent("io.github.fengbul.voicecontrol", isDirectory: true)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true,
+                                                    attributes: [.posixPermissions: 0o700])
+            let instance = try SingleInstanceLock(url: directory.appendingPathComponent("instance.lock"))
+            guard instance.acquired else {
+                DistributedNotificationCenter.default().postNotificationName(showVoicePanel, object: nil,
+                                                                             userInfo: nil, deliverImmediately: true)
+                print("Voice is already running; requested its existing panel.")
+                return
+            }
+            withExtendedLifetime(instance) { runApplication() }
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Voice 无法确认运行实例"
+            alert.informativeText = "请检查应用支持目录的访问权限，然后重试。\n\(error.localizedDescription)"
+            alert.runModal()
+            exit(1)
+        }
+    }
+
+    private static func runApplication() {
         if CommandLine.arguments.contains("--audio-preflight") {
             let engine = AudioVolumeEngine()
             do {

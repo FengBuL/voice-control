@@ -1,8 +1,10 @@
-Voice 0.3.0 Beta — 显示器音量调节 / Monitor volume control
+Voice 0.3.1 Beta — 显示器音量调节 / Monitor volume control
 https://github.com/FengBuL/voice-control
 
 系统要求：Apple Silicon（M 系列）Mac，macOS 14.2 或更新版本。
 这是未经过 Apple 公证的测试版，使用临时签名。
+
+从 0.3.0 升级时，请先退出所有旧版 Voice 实例，再替换应用。0.3.1 再次打开会显示已有面板，避免重复运行。
 
 安装与使用
 1. 将 Voice.app 拖入 Applications（应用程序），然后从应用程序文件夹打开。
@@ -26,7 +28,7 @@ https://github.com/FengBuL/voice-control
 English
 Requires an Apple Silicon Mac running macOS 14.2 or later.
 This beta is ad-hoc signed and has not been notarized by Apple.
-Drag Voice.app into Applications. If Gatekeeper blocks it, follow Apple's Privacy & Security / Open Anyway flow after verifying the download source.
+Quit all older Voice instances before upgrading from 0.3.0. Reopening Voice now shows the existing panel. Drag Voice.app into Applications. If Gatekeeper blocks it, follow Apple's Privacy & Security / Open Anyway flow after verifying the download source.
 Select your monitor in System Settings > Sound > Output. Open the menu bar speaker, click Enable Software Volume (启用软件音量), and allow system audio access. Initial software volume is 30%.
 Use the slider or mute to check actual playback. Re-enable after changing the output or connection.
 Audio is processed locally in real time, with no recording files or uploads. Optional media keys require Accessibility permission. The current app UI is Chinese.

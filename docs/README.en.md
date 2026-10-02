@@ -4,7 +4,7 @@
 
 Voice puts volume and mute controls for your external monitor in the Mac menu bar. When the HDMI output has no adjustable system volume, software mode attenuates playback locally and sends it back to the same device. DDC/CI hardware control is also available when the monitor and connection support it.
 
-**0.3.0 Beta · Apple Silicon · macOS 14.2+ · Chinese UI.** This build is ad-hoc signed and has not been notarized by Apple.
+**0.3.1 Beta · Apple Silicon · macOS 14.2+ · Chinese UI.** This build is ad-hoc signed and has not been notarized by Apple.
 
 ## Install
 
@@ -12,6 +12,8 @@ Voice puts volume and mute controls for your external monitor in the Mac menu ba
 2. Drag Voice into Applications and open it there.
 3. If Gatekeeper blocks first launch, follow [Apple's instructions](https://support.apple.com/102445) in System Settings > Privacy & Security after verifying the download source. Do not disable system-wide security checks.
 4. Open Voice from the menu bar speaker icon. This menu bar app does not normally show a Dock icon.
+
+Quit all older Voice instances before replacing the app when upgrading from 0.3.0. Voice now keeps one instance per user; reopening shows the existing panel, including when starting an app copy or launching simultaneously.
 
 ZIP and SHA-256 files are also provided. Quit and delete Voice.app to uninstall. No audio driver is installed.
 
@@ -49,5 +51,7 @@ open build/Voice.app
 Artifacts are written to `release/`. The scripts use ad-hoc signing; Developer ID signing and notarization are not configured. The project-local VFS overlay avoids duplicate Swift module maps in some toolchains without changing system files.
 
 MIT licensed. The vendored [m1ddc](https://github.com/waydabber/m1ddc) retains its MIT license; see [upstream details](../Vendor/m1ddc/UPSTREAM.md). DDC uses private display interfaces, whose compatibility may change with macOS updates.
+
+With Voice stopped, `python3 scripts/test-single-instance.py` checks duplicate launches, copied apps, Finder reopen, and simultaneous startup without enabling audio capture.
 
 Report issues with macOS version, Mac and monitor models, cable path, output name, and reproduction steps at [Issues](https://github.com/FengBuL/voice-control/issues). Omit serial numbers and private information.

@@ -8,6 +8,12 @@ xcrun swiftc -target arm64-apple-macosx13.0 \
   -module-cache-path "$PWD/build/module-cache" \
   -parse-as-library Sources/Domain.swift Tests/DomainTests.swift -o build/DomainTests
 ./build/DomainTests
+xcrun swiftc -target arm64-apple-macosx14.2 \
+  -vfsoverlay "$PWD/build/compiler-overlay.json" \
+  -Xcc -ivfsoverlay -Xcc "$PWD/build/compiler-overlay.json" \
+  -module-cache-path "$PWD/build/module-cache" \
+  -parse-as-library Sources/SingleInstanceLock.swift Tests/SingleInstanceTests.swift -o build/SingleInstanceTests
+./build/SingleInstanceTests
 xcrun clang -fmodules -I Vendor/m1ddc/headers Tests/DDCPacketTests.m \
   Vendor/m1ddc/sources/i2c.m -framework Foundation -framework CoreDisplay -o build/DDCPacketTests
 ./build/DDCPacketTests

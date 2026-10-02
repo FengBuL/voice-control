@@ -13,7 +13,7 @@ xcrun swiftc -O -target arm64-apple-macosx14.2 \
   -Xcc -ivfsoverlay -Xcc "$PWD/build/compiler-overlay.json" \
   -module-cache-path "$PWD/build/module-cache" \
   -import-objc-header Sources/AudioDSP.h \
-  -parse-as-library Sources/Domain.swift Sources/AudioVolumeEngine.swift Sources/App.swift build/AudioDSP.o \
+  -parse-as-library Sources/Domain.swift Sources/SingleInstanceLock.swift Sources/AudioVolumeEngine.swift Sources/App.swift build/AudioDSP.o \
   -framework AppKit -framework SwiftUI -framework CoreAudio -framework ApplicationServices \
   -o "$app/Contents/MacOS/Voice"
 cp Vendor/m1ddc/m1ddc "$app/Contents/Helpers/m1ddc"

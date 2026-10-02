@@ -7,10 +7,11 @@
 <key>CFBundleExecutable</key><string>Voice</string>
 <key>CFBundleIconFile</key><string>Voice</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.3.0</string>
-<key>CFBundleVersion</key><string>3</string>
+<key>CFBundleShortVersionString</key><string>0.3.1</string>
+<key>CFBundleVersion</key><string>4</string>
 <key>LSMinimumSystemVersion</key><string>14.2</string>
 <key>NSAudioCaptureUsageDescription</key><string>在本机实时调节送往显示器的音量。音频只用于即时播放，不保存录音、不上传。</string>
 <key>LSUIElement</key><true/>
+<key>LSMultipleInstancesProhibited</key><true/>
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
